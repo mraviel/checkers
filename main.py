@@ -1,6 +1,7 @@
 import pygame as pg
 from setting import *
 from os import path
+from board import Board
 
 # location of the img folder
 img_dir = path.join(path.dirname(__file__), 'images')
@@ -16,6 +17,7 @@ class Game:
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         self.running = True
+        self.myBoard = Board()
 
     def new(self):
         # start a new game
@@ -50,6 +52,9 @@ class Game:
     def draw(self):
         # Game loop - draw
         self.screen.fill((43,123,21))
+
+        self.myBoard.drawBoardGame(self.screen, self.myBoard)
+
 
         # after drawing everything, flip the display
         pg.display.flip()
