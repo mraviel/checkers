@@ -48,6 +48,9 @@ class Game:
             if event.type == pg.MOUSEBUTTONDOWN:
                 self.mx, self.my = pg.mouse.get_pos()
                 print (self.mx, self.my)
+                self.myBoard.recoSqure(self.mx, self.my)
+                if self.mx >= 0 and self.mx <= 110 and self.my >= 0 and self.my <= 110:
+                    print("Your a ginues")
 
     def draw(self):
         # Game loop - draw
@@ -75,10 +78,20 @@ class Game:
         text_rect.midtop = (x, y)
         self.screen.blit(text_surface, text_rect)
 
+    def test(self):
+
+        """ Test if the all the function are working! """
+
+        assert self.myBoard.recoSqure(115, 101) == (1,0)
+        assert self.myBoard.recoSqure(192, 790) == (1,7)
+
+        print("All function are work!")
+
 
 
 
 g = Game()
+g.test() # test if all function are working!
 g.show_start_screen()
 while g.running:
     g.new()

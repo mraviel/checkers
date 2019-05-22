@@ -1,8 +1,8 @@
 # Game settings
 
 TITLE = "             Checkers       "
-WIDTH = 920
-HEIGHT = 920
+WIDTH = 900
+HEIGHT = 900
 FPS = 12
 FONT_NAME = 'arial'
 

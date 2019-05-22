@@ -29,9 +29,10 @@ class Board():
                 elif (x % 2 != 0) and (y % 2 != 0):
                     board[x][y] = Squre(BLACK, self.squreLocation(x, y))
                 elif (x % 2 == 0) and (y % 2 == 0):
-                    board[x][y] = Squre(BLACK, (int(920 / 8 * x + 50), int(920 / 8 * y + 50)))
+                    board[x][y] = Squre(BLACK, (int(WIDTH / 8 * x + 50), int(HEIGHT / 8 * y + 50)))
 
         print(board)
+        print(board[1][0].pos)
 
         return board
 
@@ -50,4 +51,13 @@ class Board():
         """ Get the squre location.  Argumentes: x, y of the location(min(0,0), max(7,7)).
             Return: tupple of the location """
 
-        return (int(920 / 8 * x + 50), int(920 / 8 * y + 50))
+        return (int(WIDTH / 8 * x + 50), int(HEIGHT / 8 * y + 50))
+
+    def recoSqure(self, mx, my):  # reco == recognizeSqure
+
+        """ Get the mouse position (x, y), does the opposite from squreLocation.
+            Return: tupple of the location"""
+
+        print ((int(mx / (WIDTH / 8)), int(my / (HEIGHT / 8)))) # print to ensure it's work
+
+        return (int(mx / (WIDTH / 8)), int(my / (HEIGHT / 8)))
