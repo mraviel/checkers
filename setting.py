@@ -6,6 +6,8 @@ HEIGHT = 900
 FPS = 12
 FONT_NAME = 'arial'
 
+SIZE = 40  # --> the size of all pieces.
+
 
 # define colors
 WHITE = (255, 255, 255)

@@ -17,7 +17,7 @@ class Board():
 
         # initialize the board squres (black or white)
 
-        board = [[None] * 8 for i in range(8)]
+        board = [[None] * 8 for i in range(8)]  # The list, on this list we'll make the whole game.
 
 
         for x in range(8):

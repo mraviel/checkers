@@ -2,6 +2,7 @@ import pygame as pg
 from setting import *
 from os import path
 from board import Board
+from piece import Piece
 
 # location of the img folder
 img_dir = path.join(path.dirname(__file__), 'images')
@@ -48,15 +49,22 @@ class Game:
             if event.type == pg.MOUSEBUTTONDOWN:
                 self.mx, self.my = pg.mouse.get_pos()
                 print (self.mx, self.my)
-                self.myBoard.recoSqure(self.mx, self.my)
-                if self.mx >= 0 and self.mx <= 110 and self.my >= 0 and self.my <= 110:
-                    print("Your a ginues")
+                self.myBoard.recoSqure(self.mx, self.my)   # -->> recognize the squre you click on. ex: return (0,0)
+
 
     def draw(self):
         # Game loop - draw
         self.screen.fill((43,123,21))
 
         self.myBoard.drawBoardGame(self.screen, self.myBoard)
+
+        # self.myBoard.board[0][0].pieceOn = Piece(RED)
+        
+        # Update the drawing of the pieces on the basis of rather they have a piece or not!
+        for x in range(8):
+            for y in range(8):
+                if self.myBoard.board[x][y].pieceOn != None:
+                    pg.draw.circle(self.screen, self.myBoard.board[x][y].pieceOn.color, self.myBoard.board[x][y].pos, SIZE)
 
 
         # after drawing everything, flip the display
