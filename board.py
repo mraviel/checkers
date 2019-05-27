@@ -1,6 +1,7 @@
 import pygame as pg
 from setting import *
 from squre import Squre
+from piece import Piece
 
 class Board():
 
@@ -45,6 +46,18 @@ class Board():
             for x in range(8):
                 pg.draw.rect(screen, self.board[x][y].color, (WIDTH / 8 * x, HEIGHT / 8 * y, WIDTH / 8, HEIGHT / 8), 0)
 
+                # Draw the all init pieces on the board.
+
+                if (x % 2 != 0) and (y % 2 != 0) and (y < 3 or y > 4):
+                    if y < 3:
+                        self.board[x][y].pieceOn = Piece(GREEN)
+                    elif y > 4:
+                        self.board[x][y].pieceOn = Piece(RED)
+                elif (x % 2 == 0) and (y % 2 == 0) and (y < 3 or y > 4):
+                    if y < 3:
+                        self.board[x][y].pieceOn = Piece(GREEN)
+                    elif y > 4:
+                        self.board[x][y].pieceOn = Piece(RED)
 
     def squreLocation(self, x, y):
 

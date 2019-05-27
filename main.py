@@ -58,8 +58,9 @@ class Game:
 
         self.myBoard.drawBoardGame(self.screen, self.myBoard)
 
+
         # self.myBoard.board[0][0].pieceOn = Piece(RED)
-        
+
         # Update the drawing of the pieces on the basis of rather they have a piece or not!
         for x in range(8):
             for y in range(8):
