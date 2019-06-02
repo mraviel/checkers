@@ -19,6 +19,7 @@ class Game:
         self.clock = pg.time.Clock()
         self.running = True
         self.myBoard = Board()
+        self.clicks = []
 
     def new(self):
         # start a new game
@@ -50,6 +51,20 @@ class Game:
                 self.mx, self.my = pg.mouse.get_pos()
                 print (self.mx, self.my)
                 self.myBoard.recoSqure(self.mx, self.my)   # -->> recognize the squre you click on. ex: return (0,0)
+                self.clicks.append(self.myBoard.recoSqure(self.mx, self.my))
+
+                # Make a move :)
+                if (len(self.clicks) == 2) and (self.clicks[0] != self.clicks[1]):  # -->> If clicks 2 times and in diffrent place.
+                    print(self.movePiece(self.clicks[0], self.clicks[1]))
+
+                elif len(self.clicks) == 2 and self.clicks[0] == self.clicks[1]:  # -->> If clicks 2 times and in the same place.
+                    self.clicks = [self.clicks[0]]
+
+                elif len(self.clicks) > 2:  # Reset the move.
+                    self.clicks = []
+                    self.clicks.append(self.myBoard.recoSqure(self.mx, self.my))
+
+                print(self.clicks)
 
 
     def draw(self):
@@ -96,6 +111,19 @@ class Game:
 
         print("All function are work!")
 
+
+    def movePiece(self, oldPos, newPos):
+
+        x1, y1 = oldPos
+        x2, y2 = newPos
+        if ((((x1-1) == x2) and ((y1-1) == y2) or ((x1+1) == x2) and ((y1-1) == y2))) and (self.myBoard.board[x2][y2].pieceOn == None) and \
+            (self.myBoard.board[x1][y1].pieceOn != None) and (self.myBoard.board[x1][y1].pieceOn.color == RED):
+            return "RED JUST MOVE"
+        elif ((((x1+1) == x2) and ((y1+1) == y2) or ((x1-1) == x2) and ((y1+1) == y2))) and (self.myBoard.board[x2][y2].pieceOn == None) and \
+            (self.myBoard.board[x1][y1].pieceOn != None) and (self.myBoard.board[x1][y1].pieceOn.color == GREEN):
+            return "GREEN JUST MOVE"
+        else:
+            return "NOTHING HAPPEND"
 
 
 
