@@ -46,7 +46,13 @@ class Board():
             for x in range(8):
                 pg.draw.rect(screen, self.board[x][y].color, (WIDTH / 8 * x, HEIGHT / 8 * y, WIDTH / 8, HEIGHT / 8), 0)
 
-                # Draw the all init pieces on the board.
+
+    def drawAllPieces(self):
+
+        for y in range(8):
+            for x in range(8):
+
+                # Draw the all init pieces on the board.  -->> put it in the update section.
 
                 if (x % 2 != 0) and (y % 2 != 0) and (y < 3 or y > 4):
                     if y < 3:

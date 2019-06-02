@@ -19,7 +19,9 @@ class Game:
         self.clock = pg.time.Clock()
         self.running = True
         self.myBoard = Board()
+        self.myBoard.drawAllPieces()
         self.clicks = []
+
 
     def new(self):
         # start a new game
@@ -37,7 +39,6 @@ class Game:
     def update(self):
         # Game loop - update
         pass
-
 
     def events(self):
         # Game loop - events
@@ -118,6 +119,7 @@ class Game:
         x2, y2 = newPos
         if ((((x1-1) == x2) and ((y1-1) == y2) or ((x1+1) == x2) and ((y1-1) == y2))) and (self.myBoard.board[x2][y2].pieceOn == None) and \
             (self.myBoard.board[x1][y1].pieceOn != None) and (self.myBoard.board[x1][y1].pieceOn.color == RED):
+            self.myBoard.board[x1][y1].pieceOn = None
             return "RED JUST MOVE"
         elif ((((x1+1) == x2) and ((y1+1) == y2) or ((x1-1) == x2) and ((y1+1) == y2))) and (self.myBoard.board[x2][y2].pieceOn == None) and \
             (self.myBoard.board[x1][y1].pieceOn != None) and (self.myBoard.board[x1][y1].pieceOn.color == GREEN):
