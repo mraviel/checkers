@@ -114,19 +114,50 @@ class Game:
 
 
     def movePiece(self, oldPos, newPos):
-
         x1, y1 = oldPos
         x2, y2 = newPos
+
+        # move piece (red move)
         if ((((x1-1) == x2) and ((y1-1) == y2) or ((x1+1) == x2) and ((y1-1) == y2))) and (self.myBoard.board[x2][y2].pieceOn == None) and \
             (self.myBoard.board[x1][y1].pieceOn != None) and (self.myBoard.board[x1][y1].pieceOn.color == RED):
             self.myBoard.board[x1][y1].pieceOn = None
             self.myBoard.board[x2][y2].pieceOn = Piece(RED)
             return "RED JUST MOVE"
-        elif ((((x1+1) == x2) and ((y1+1) == y2) or ((x1-1) == x2) and ((y1+1) == y2))) and (self.myBoard.board[x2][y2].pieceOn == None) and \
-            (self.myBoard.board[x1][y1].pieceOn != None) and (self.myBoard.board[x1][y1].pieceOn.color == GREEN):
+
+        # move piece (green move)
+        elif ((((x1 + 1) == x2) and ((y1 + 1) == y2) or ((x1 - 1) == x2) and ((y1 + 1) == y2))) and (self.myBoard.board[x2][y2].pieceOn == None) and \
+             (self.myBoard.board[x1][y1].pieceOn != None) and (self.myBoard.board[x1][y1].pieceOn.color == GREEN):
+                self.myBoard.board[x1][y1].pieceOn = None
+                self.myBoard.board[x2][y2].pieceOn = Piece(GREEN)
+                return "GREEN JUST MOVE"
+
+        # eat a piece (red eat green)
+        elif ((self.myBoard.board[x2][y2].pieceOn == None)) and \
+             ((x1+2) == x2) and ((y1-2) == y2) and (self.myBoard.board[x1+1][y1-1].pieceOn != None) and (self.myBoard.board[x1+1][y1-1].pieceOn.color == GREEN):
+                self.myBoard.board[x1 + 1][y1 - 1].pieceOn = None
+                self.myBoard.board[x2][y2].pieceOn = self.myBoard.board[x1][y1].pieceOn # move the piece to another location after the eat
+                self.myBoard.board[x1][y1].pieceOn = None # delate the old piece position
+                return ("RED EAT THE GREEN")
+        elif ((self.myBoard.board[x2][y2].pieceOn == None)) and \
+             (((x1-2) == x2) and ((y1-2) == y2) and (self.myBoard.board[x1-1][y1-1].pieceOn != None) and (self.myBoard.board[x1-1][y1-1].pieceOn.color == GREEN)):
+                self.myBoard.board[x1 - 1][y1 - 1].pieceOn = None
+                self.myBoard.board[x2][y2].pieceOn = self.myBoard.board[x1][y1].pieceOn
+                self.myBoard.board[x1][y1].pieceOn = None
+                return ("RED EAT THE GREEN")
+
+            # eat a piece (green eat red)
+        elif ((self.myBoard.board[x2][y2].pieceOn == None)) and \
+             (((x1-2) == x2) and ((y1+2) == y2) and (self.myBoard.board[x1-1][y1+1].pieceOn != None) and  (self.myBoard.board[x1-1][y1+1].pieceOn.color == RED)):
+                self.myBoard.board[x1-1][y1+1].pieceOn = None
+                self.myBoard.board[x2][y2].pieceOn = self.myBoard.board[x1][y1].pieceOn
+                self.myBoard.board[x1][y1].pieceOn = None
+                return ("GREEN EAT THE RED")
+        elif (((x1+2) == x2) and ((y1+2) == y2) and (self.myBoard.board[x1+1][y1+1].pieceOn != None) and (self.myBoard.board[x1+1][y1+1].pieceOn.color == RED)):
+            self.myBoard.board[x1+1][y1+1].pieceOn = None
+            self.myBoard.board[x2][y2].pieceOn = self.myBoard.board[x1][y1].pieceOn
             self.myBoard.board[x1][y1].pieceOn = None
-            self.myBoard.board[x2][y2].pieceOn = Piece(GREEN)
-            return "GREEN JUST MOVE"
+            return ("GREEN EAT THE RED")
+
         else:
             return "NOTHING HAPPEND"
 
