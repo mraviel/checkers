@@ -80,3 +80,54 @@ class Board():
         print ((int(mx / (WIDTH / 8)), int(my / (HEIGHT / 8)))) # print to ensure it's work
 
         return (int(mx / (WIDTH / 8)), int(my / (HEIGHT / 8)))
+
+    def inRangeOfBoard(self, pos):
+
+        """ Take a position and Return True if that pos is in the range of the board. """
+
+        x, y = pos
+        try:
+            if (x < 0) or (y < 0):
+                print("BADD")
+                return False
+            elif self.board[x][y]:
+                print("GOOD")
+                return True
+        except IndexError:
+            print("BADD")
+            return False
+
+    def listOfMove(self, pos, color):
+
+        """ Return a dictionary of moves the piece can move."""
+
+        x1, y1 = pos
+        oldPiecePos = self.board[x1][y1].pieceOn
+        d = {}
+        whatToRemove = []
+
+        if color == RED: # and oldPiecePos.color == RED:
+
+            d['moveL'] = (x1 - 1, y1 - 1)
+            d['moveR'] = (x1 + 1, y1 - 1)
+            d['eatL'] = (x1 - 2, y1 - 2), (x1 - 1, y1 - 1)
+            d['eatR'] = (x1 + 2, y1 - 2), (x1 + 1, y1 - 1)
+
+        elif color == GREEN: # and oldPiecePos.color == GREEN:
+
+            d['moveL'] = (x1 + 1, y1 + 1)
+            d['moveR'] = (x1 - 1, y1 + 1)
+            d['eatL'] = (x1 - 2, y1 + 2), (x1 - 1, y1 + 1)
+            d['eatR'] = (x1 + 2, y1 + 2), (x1 + 1, y1 + 1)
+
+        for move in d:
+            if ('move' in move) and (not self.inRangeOfBoard(d[move])):
+                whatToRemove.append(move)
+            if ('eat' in move) and (not self.inRangeOfBoard(d[move][0])):
+                whatToRemove.append(move)
+
+        for r in whatToRemove:
+            del d[r]
+
+        return d
+
