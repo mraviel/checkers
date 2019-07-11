@@ -81,6 +81,14 @@ class Board():
 
         return (int(mx / (WIDTH / 8)), int(my / (HEIGHT / 8)))
 
+    def posOnBoard(self, pos):
+
+        """ Take a position (type list / tuple / dict) and put it in the board.
+            Return: Squre in (x, y) location."""
+
+        x, y = pos
+        return self.board[x][y]
+
     def inRangeOfBoard(self, pos):
 
         """ Take a position and Return True if that pos is in the range of the board. """
@@ -106,24 +114,34 @@ class Board():
         d = {}
         whatToRemove = []
 
-        if color == RED: # and oldPiecePos.color == RED:
+        if (color == RED) and (oldPiecePos is not None) and (oldPiecePos.color == RED):
 
             d['moveL'] = (x1 - 1, y1 - 1)
             d['moveR'] = (x1 + 1, y1 - 1)
             d['eatL'] = (x1 - 2, y1 - 2), (x1 - 1, y1 - 1)
             d['eatR'] = (x1 + 2, y1 - 2), (x1 + 1, y1 - 1)
 
-        elif color == GREEN: # and oldPiecePos.color == GREEN:
+        elif (color == GREEN) and (oldPiecePos is not None) and (oldPiecePos.color == GREEN):
 
-            d['moveL'] = (x1 + 1, y1 + 1)
-            d['moveR'] = (x1 - 1, y1 + 1)
-            d['eatL'] = (x1 - 2, y1 + 2), (x1 - 1, y1 + 1)
-            d['eatR'] = (x1 + 2, y1 + 2), (x1 + 1, y1 + 1)
+            d['moveR'] = (x1 + 1, y1 + 1)
+            d['moveL'] = (x1 - 1, y1 + 1)
+            d['eatR'] = (x1 - 2, y1 + 2), (x1 - 1, y1 + 1)
+            d['eatL'] = (x1 + 2, y1 + 2), (x1 + 1, y1 + 1)
 
         for move in d:
             if ('move' in move) and (not self.inRangeOfBoard(d[move])):
                 whatToRemove.append(move)
             if ('eat' in move) and (not self.inRangeOfBoard(d[move][0])):
+                whatToRemove.append(move)
+
+        for r in whatToRemove:
+            del d[r]
+
+        whatToRemove = []
+        for move in d:
+            if ('move' in move) and (self.posOnBoard(d[move]).pieceOn is not None):
+                whatToRemove.append(move)
+            if ('eat' in move) and (self.posOnBoard(d[move][0]).pieceOn is not None):
                 whatToRemove.append(move)
 
         for r in whatToRemove:

@@ -58,7 +58,7 @@ class Game:
                 if (len(self.clicks) == 2) and (self.clicks[0] != self.clicks[1]):  # -->> If clicks 2 times and in diffrent place.
                     print(self.movePiece(self.clicks[0], self.clicks[1]))
 
-                    print(self.myBoard.listOfMove(self.clicks[0], RED))
+                    # print(self.myBoard.listOfMove(self.clicks[0], RED))
 
                 elif len(self.clicks) == 2 and self.clicks[0] == self.clicks[1]:  # -->> If clicks 2 times and in the same place.
                     self.clicks = [self.clicks[0]]
