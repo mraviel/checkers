@@ -20,7 +20,6 @@ class Board():
 
         board = [[None] * 8 for i in range(8)]  # The list, on this list we'll make the whole game.
 
-
         for x in range(8):
             for y in range(8):
                 if (x % 2 != 0) and (y % 2 == 0):
@@ -37,7 +36,6 @@ class Board():
 
         return board
 
-
     def drawBoardGame(self, screen, board):
 
         """ Draw the all board on the screen """
@@ -45,7 +43,6 @@ class Board():
         for y in range(8):
             for x in range(8):
                 pg.draw.rect(screen, self.board[x][y].color, (WIDTH / 8 * x, HEIGHT / 8 * y, WIDTH / 8, HEIGHT / 8), 0)
-
 
     def drawAllPieces(self):
 
@@ -70,16 +67,16 @@ class Board():
         """ Get the squre location.  Argumentes: x, y of the location(min(0,0), max(7,7)).
             Return: tupple of the location """
 
-        return (int(WIDTH / 8 * x + 50), int(HEIGHT / 8 * y + 50))
+        return int(WIDTH / 8 * x + 50), int(HEIGHT / 8 * y + 50)
 
     def recoSqure(self, mx, my):  # reco == recognizeSqure
 
         """ Get the mouse position (x, y), does the opposite from squreLocation.
             Return: tupple of the location"""
 
-        print ((int(mx / (WIDTH / 8)), int(my / (HEIGHT / 8)))) # print to ensure it's work
+        print(int(mx / (WIDTH / 8)), int(my / (HEIGHT / 8)))  # print to ensure it's work
 
-        return (int(mx / (WIDTH / 8)), int(my / (HEIGHT / 8)))
+        return int(mx / (WIDTH / 8)), int(my / (HEIGHT / 8))
 
     def posOnBoard(self, pos):
 
@@ -105,15 +102,15 @@ class Board():
             print("BADD")
             return False
 
-    def listOfMove(self, pos, color):
+    def listOfMoves(self, pos, color):
 
         """ Return a dictionary of moves the piece can move."""
 
         x1, y1 = pos
         oldPiecePos = self.board[x1][y1].pieceOn
         d = {}
-        whatToRemove = []
 
+        # Add all the legal moves to dict
         if (color == RED) and (oldPiecePos is not None) and (oldPiecePos.color == RED):
 
             d['moveL'] = (x1 - 1, y1 - 1)
@@ -128,6 +125,8 @@ class Board():
             d['eatR'] = (x1 - 2, y1 + 2), (x1 - 1, y1 + 1)
             d['eatL'] = (x1 + 2, y1 + 2), (x1 + 1, y1 + 1)
 
+        # Delete a pos that is out of range
+        whatToRemove = []
         for move in d:
             if ('move' in move) and (not self.inRangeOfBoard(d[move])):
                 whatToRemove.append(move)
@@ -137,15 +136,93 @@ class Board():
         for r in whatToRemove:
             del d[r]
 
+        # Delete a pos that is taken by another piece
         whatToRemove = []
         for move in d:
             if ('move' in move) and (self.posOnBoard(d[move]).pieceOn is not None):
                 whatToRemove.append(move)
             if ('eat' in move) and (self.posOnBoard(d[move][0]).pieceOn is not None):
                 whatToRemove.append(move)
+            if ('eat' in move) and (self.posOnBoard(d[move][1]).pieceOn is None):
+                whatToRemove.append(move)
 
-        for r in whatToRemove:
-            del d[r]
+        try:
+            for r in whatToRemove:
+                del d[r]
+        except KeyError:
+            pass
 
         return d
+
+    def movePiece(self, pos1, pos2):
+
+        """ Move piece from one position to another """
+
+        self.posOnBoard(pos2).pieceOn = self.posOnBoard(pos1).pieceOn
+        self.posOnBoard(pos1).pieceOn = None
+
+    def eatPiece(self, pos1, pos2, nextPos):
+
+        """ Make the eat move: move the piece and remove the next position. """
+
+        self.movePiece(pos1, pos2)
+        self.posOnBoard(nextPos).pieceOn = None
+
+    def movePieceTurn(self, oldPos, newPos, turn):
+
+        """ The turn of the game each player move in his turn."""
+
+        x1, y1 = oldPos
+        x2, y2 = newPos
+
+        oldPiecePos = self.board[x1][y1].pieceOn
+        newPiecePos = self.board[x2][y2].pieceOn
+
+        if turn:
+
+            redMoves = self.listOfMoves((x1, y1), RED)   # dict of red legal moves
+            print(redMoves)
+
+            # move piece (red move)
+            for move in redMoves:
+
+                if ('move' in move) and ((x2, y2) == redMoves[move]):
+                    # make a move
+                    self.movePiece(oldPos, newPos)
+                    return "RED JUST MOVE"
+
+                elif ('eat' in move) and ((x2, y2) == redMoves[move][0]) and (x1 - x2 < 0):  # eat to right
+                    # remove next piece and move the piece
+                    self.eatPiece(oldPos, newPos, redMoves[move][1])
+                    return "RED EAT THE GREEN"
+
+                elif ('eat' in move) and ((x2, y2) == redMoves[move][0]) and (x1 - x2 > 0):  # eat to left
+                    # remove next piece and move the piece
+                    self.eatPiece(oldPos, newPos, redMoves[move][1])
+                    return "RED EAT THE GREEN"
+
+            return "NOTHING HAPPEND"
+
+        else:
+
+            greenMoves = self.listOfMoves((x1, y1), GREEN)  # dict of green legal moves
+            print(greenMoves)
+
+            for move in greenMoves:
+
+                # move piece (green move)
+                if ('move' in move) and ((x2, y2) == greenMoves[move]):
+                    self.movePiece(oldPos, newPos)
+                    return "GREEN JUST MOVE"
+
+                elif ('eat' in move) and ((x2, y2) == greenMoves[move][0]) and (x1 - x2 < 0):  # eat to right
+                    self.eatPiece(oldPos, newPos, greenMoves[move][1])
+                    return "GREEN EAT THE RED"
+
+                elif ('eat' in move) and ((x2, y2) == greenMoves[move][0]) and (x1 - x2 > 0):
+                    self.eatPiece(oldPos, newPos, greenMoves[move][1])
+                    return "GREEN EAT THE RED"
+
+            return "NOTHING HAPPEND"
+
 
