@@ -120,10 +120,10 @@ class Board():
 
         elif (color == GREEN) and (oldPiecePos is not None) and (oldPiecePos.color == GREEN):
 
-            d['moveR'] = (x1 + 1, y1 + 1)
-            d['moveL'] = (x1 - 1, y1 + 1)
-            d['eatR'] = (x1 - 2, y1 + 2), (x1 - 1, y1 + 1)
-            d['eatL'] = (x1 + 2, y1 + 2), (x1 + 1, y1 + 1)
+            d['moveL'] = (x1 + 1, y1 + 1)
+            d['moveR'] = (x1 - 1, y1 + 1)
+            d['eatL'] = (x1 - 2, y1 + 2), (x1 - 1, y1 + 1)
+            d['eatR'] = (x1 + 2, y1 + 2), (x1 + 1, y1 + 1)
 
         # Delete a pos that is out of range
         whatToRemove = []
@@ -168,61 +168,31 @@ class Board():
         self.movePiece(pos1, pos2)
         self.posOnBoard(nextPos).pieceOn = None
 
-    def movePieceTurn(self, oldPos, newPos, turn):
+    def movePieceTurn(self, oldPos, newPos, canMoves):
 
         """ The turn of the game each player move in his turn."""
 
         x1, y1 = oldPos
         x2, y2 = newPos
 
-        oldPiecePos = self.board[x1][y1].pieceOn
-        newPiecePos = self.board[x2][y2].pieceOn
+        print(canMoves)
 
-        if turn:
+        # move piece
+        for move in canMoves:
 
-            redMoves = self.listOfMoves((x1, y1), RED)   # dict of red legal moves
-            print(redMoves)
+            if ('move' in move) and ((x2, y2) == canMoves[move]):
+                # make a move
+                self.movePiece(oldPos, newPos)
+                return "MOVE JUST HAPPEND"
 
-            # move piece (red move)
-            for move in redMoves:
+            elif ('eat' in move) and ('R' in move) and ((x2, y2) == canMoves[move][0]) and (x1 - x2 < 0):  # eat to right
+                # remove next piece and move the piece
+                self.eatPiece(oldPos, newPos, canMoves[move][1])
+                return "EAT JUST HAPPEND (RIGHT)"
 
-                if ('move' in move) and ((x2, y2) == redMoves[move]):
-                    # make a move
-                    self.movePiece(oldPos, newPos)
-                    return "RED JUST MOVE"
+            elif ('eat' in move) and ('L' in move) and ((x2, y2) == canMoves[move][0]) and (x1 - x2 > 0):  # eat to left
+                # remove next piece and move the piece
+                self.eatPiece(oldPos, newPos, canMoves[move][1])
+                return "EAT JUST HAPPEND (LEFT)"
 
-                elif ('eat' in move) and ((x2, y2) == redMoves[move][0]) and (x1 - x2 < 0):  # eat to right
-                    # remove next piece and move the piece
-                    self.eatPiece(oldPos, newPos, redMoves[move][1])
-                    return "RED EAT THE GREEN"
-
-                elif ('eat' in move) and ((x2, y2) == redMoves[move][0]) and (x1 - x2 > 0):  # eat to left
-                    # remove next piece and move the piece
-                    self.eatPiece(oldPos, newPos, redMoves[move][1])
-                    return "RED EAT THE GREEN"
-
-            return "NOTHING HAPPEND"
-
-        else:
-
-            greenMoves = self.listOfMoves((x1, y1), GREEN)  # dict of green legal moves
-            print(greenMoves)
-
-            for move in greenMoves:
-
-                # move piece (green move)
-                if ('move' in move) and ((x2, y2) == greenMoves[move]):
-                    self.movePiece(oldPos, newPos)
-                    return "GREEN JUST MOVE"
-
-                elif ('eat' in move) and ((x2, y2) == greenMoves[move][0]) and (x1 - x2 < 0):  # eat to right
-                    self.eatPiece(oldPos, newPos, greenMoves[move][1])
-                    return "GREEN EAT THE RED"
-
-                elif ('eat' in move) and ((x2, y2) == greenMoves[move][0]) and (x1 - x2 > 0):
-                    self.eatPiece(oldPos, newPos, greenMoves[move][1])
-                    return "GREEN EAT THE RED"
-
-            return "NOTHING HAPPEND"
-
-
+        return "NOTHING HAPPEND"
