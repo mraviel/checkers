@@ -146,11 +146,12 @@ class Board():
             if ('eat' in move) and (self.posOnBoard(d[move][1]).pieceOn is None):
                 whatToRemove.append(move)
 
-        try:
-            for r in whatToRemove:
+        for r in whatToRemove:
+            try:
                 del d[r]
-        except KeyError:
-            pass
+            except KeyError:
+                print("KEY ERROR")
+                continue
 
         return d
 

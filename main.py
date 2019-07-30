@@ -76,6 +76,8 @@ class Game:
 
                 # Make a move :)
                 isIn = False
+
+                # If press two times and in diffrent spots.
                 if len(self.clicks) == 2 and self.clicks[0] != self.clicks[1]:
                     if self.turn:
                         print("RED IS PLAY")
