@@ -145,6 +145,11 @@ class Board():
                 whatToRemove.append(move)
             if ('eat' in move) and (self.posOnBoard(d[move][1]).pieceOn is None):
                 whatToRemove.append(move)
+            try:
+                if ('eat' in move) and (self.posOnBoard(d[move][1]).pieceOn.color == color):
+                    whatToRemove.append(move)
+            except AttributeError:
+                pass
 
         for r in whatToRemove:
             try:
