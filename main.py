@@ -53,8 +53,17 @@ class Game:
                 self.running = False
             if event.type == pg.MOUSEBUTTONDOWN:
                 self.mx, self.my = pg.mouse.get_pos()
-                print (self.mx, self.my)
+                print(self.mx, self.my)
                 self.myBoard.recoSqure(self.mx, self.my)   # -->> recognize the squre you click on. ex: return (0,0)
+
+                # Keep the second click until the multi eat is over.
+                if self.multi:
+                    try:
+                        self.clicks = [self.clicks[1]]
+                    except IndexError:
+                        self.clicks = [self.clicks[0]]
+
+                # Import new click depend on the spot the player click on.
                 self.clicks.append(self.myBoard.recoSqure(self.mx, self.my))
 
                 self.d = {}  # Initialize the dict.
@@ -86,7 +95,7 @@ class Game:
 
                     # Check if the second click is in the dict.
                     for value in self.d.values():
-                        if self.clicks[1] == value or self.clicks[1] in value:
+                        if self.clicks[1] == value or self.clicks[1] == value[0]:
                             isIn = True
 
                     # If isIn make a move
@@ -109,16 +118,37 @@ class Game:
 
                     else:
                         move = "NOT VALID MOVE"
-                        self.clicks = []
+                        if self.multi:
+                            self.clicks = [self.clicks[0]]
+                            print(self.clicks)
+                            break
+                        else:
+                            self.clicks = []
+
+                    # If there is a chance for multi eat --> self.multi == True.
+                    print("this is not happend")
+                    self.multi = False
+                    if "EAT" in move:
+                        nextPos = self.myBoard.posOnBoard(self.clicks[1])
+                        for validMove in self.myBoard.listOfMoves(self.clicks[1], nextPos.pieceOn.color):
+                            if 'eat' in validMove:
+                                print("MULTI EAT")
+                                self.multi = True
+                                self.turn = not self.turn  # Give more turn for multiple eat.
+                                break
 
                     if move != "NOTHING HAPPEND" and move != "NOT VALID MOVE" and move != "Is Not Your Turn":
                         # If was made a move, change the turn.
                         self.turn = not self.turn
+
                     print(move)
 
                 # -->> If clicks 2 times and in the same place.
                 elif len(self.clicks) == 2 and self.clicks[0] == self.clicks[1]:
-                    self.clicks = []
+                    if self.multi:
+                        self.clicks = [self.clicks[1]]
+                    else:
+                        self.clicks = []
 
                 elif len(self.clicks) > 2:  # Reset the move.
                     self.clicks = []
