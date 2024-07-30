@@ -5,6 +5,7 @@ from Board import Board
 from Piece import Piece
 from Square import Square
 from Player import Player
+# from Client import Client
 
 # location of the img folder
 img_dir = path.join(path.dirname(__file__), 'images')
@@ -34,6 +35,8 @@ class Game:
         self.multi = False  # refer to multiple eat
         self.mx, self.my = 0, 0  # pixel location on the screen
         self.end_player_move = False  # player move status (is move ended?)
+
+        # self.client = Client('172.20.10.4', 5001)
 
     def new(self):
         # start a new game
@@ -74,7 +77,7 @@ class Game:
             eat_list = self.prev_moves['eat']
 
             if self.multi is False and current_square.board_pos in move_list:
-                self.myBoard.movePiece(prev_square, current_square)
+                move = self.myBoard.movePiece(prev_square, current_square)
                 print('clicks reset1')
                 self.clicks = []
                 status['move'] = 'Done'
@@ -120,6 +123,7 @@ class Game:
         """ The turn of the game """
 
         self.myBoard.squareOrigColor()  # default colors
+        status = {}
 
         main_player = players['main_player']
         opposite_player = players['opposite_player']
@@ -180,6 +184,7 @@ class Game:
             opposite_player.my_turn = True
 
         print(f"self.clicks: {self.clicks}, multi: {self.multi}")
+        return status
 
     def events(self):
 
@@ -196,7 +201,13 @@ class Game:
                 players = self.whoPlaying()
                 x, y = Square.pixelToSquare(self.mx, self.my)  # recognize the Square you click on. ex: return (0,0)
 
-                self.playerTurn(players, self.end_player_move, x, y)
+                status = self.playerTurn(players, self.end_player_move, x, y)
+
+                # send network player turn 
+                print(f"STATUS: {status}")
+                # print("Sending Board To Server...")
+                # self.client.send_board(self.myBoard)
+
 
     def draw(self):
         # Game loop - draw
