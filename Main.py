@@ -5,7 +5,9 @@ from Board import Board
 from Piece import Piece
 from Square import Square
 from Player import Player
-# from Client import Client
+from Client import Client
+from Settings import PORT
+from datetime import datetime
 
 # location of the img folder
 img_dir = path.join(path.dirname(__file__), 'images')
@@ -36,7 +38,7 @@ class Game:
         self.mx, self.my = 0, 0  # pixel location on the screen
         self.end_player_move = False  # player move status (is move ended?)
 
-        # self.client = Client('172.20.10.4', 5001)
+        # self.client = Client('127.0.0.1', PORT)
 
     def new(self):
         # start a new game
@@ -52,6 +54,12 @@ class Game:
 
     def update(self):
         # Game loop - update
+        # print(datetime.strftime(datetime.now(), "%m:%S.%f"))
+        # try:
+        #     self.myBoard = self.client.get_board()
+        #     print("good")
+        # except:
+        #     pass
         pass
 
     def whoPlaying(self):
@@ -78,7 +86,6 @@ class Game:
 
             if self.multi is False and current_square.board_pos in move_list:
                 move = self.myBoard.movePiece(prev_square, current_square)
-                print('clicks reset1')
                 self.clicks = []
                 status['move'] = 'Done'
 
@@ -107,7 +114,6 @@ class Game:
         if len(self.clicks) == 1 and self.multi is True:
             self.clicks = [self.clicks[0]]
         else:
-            print('clicks reset2')
             self.clicks = []
 
         # if made a move than see if the piece has become king
@@ -138,9 +144,6 @@ class Game:
             self.myBoard.colorPossibleMoves(list_of_moves)  # change colors of possible moves
 
         print(f'{list_of_moves}: list_of_moves')
-        # print(f'{self.prev_moves}: self.prev_moves')
-
-        print(self.myBoard.board[x][y])
 
         # have prev click
         if len(self.clicks) == 1:
@@ -151,7 +154,6 @@ class Game:
                 self.multi = True
 
             if status and self.multi is False:
-                print('clicks reset3')
                 self.clicks = []
                 end_player_move = True
 
@@ -167,7 +169,6 @@ class Game:
             self.clicks = self.clicks[1]
 
         else:
-            print('clicks reset4')
             self.clicks = []
 
         # if multi than save prev_moves as the first click of the multi last turn.
@@ -208,7 +209,6 @@ class Game:
                 # print("Sending Board To Server...")
                 # self.client.send_board(self.myBoard)
 
-
     def draw(self):
         # Game loop - draw
         self.screen.fill((43, 123, 21))
@@ -227,18 +227,49 @@ class Game:
 
     def show_start_screen(self):
         # the start screen
-        pass
+        self.screen.fill((150, 150, 150))
+        intro = True
+        while intro:
+
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    quit()
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_SPACE:
+                        intro = False
+                    if event.key == pg.K_q:
+                        pg.quit()
+                        quit()
+
+            self.draw_text(text='Checkers', size=50, color=(0, 0, 0), x=WIDTH / 2, y=HEIGHT / 7)
+            self.create_button("Aviel", (0,0,0), (255,255,255), (WIDTH, 50), (WIDTH / 2, HEIGHT / 3))
+            pg.display.update()
+            self.clock.tick(FPS)
 
     def show_go_screen(self):
         # the game-over screen
         pass
 
     def draw_text(self, text, size, color, x, y):
-        font = pg.font.Font(FONT_NAME, size)
+        font_name = pg.font.match_font(FONT_NAME)
+        font = pg.font.Font(font_name, size)
         text_surface = font.render(text, True, color)
         text_rect = text_surface.get_rect()
         text_rect.midtop = (x, y)
         self.screen.blit(text_surface, text_rect)
+    
+    def create_button(self, text: str, font_color: tuple, bg_color: tuple, size: tuple, pos: tuple):
+        """ Create button and return cords (x1, y1, x2, y2) """
+        font = pg.font.Font(None, 24)
+        button_surface = pg.Surface(size)
+        button_surface.fill(bg_color)
+        text_obj = font.render(text, True, font_color)
+        text_rect = text_obj.get_rect(center=(button_surface.get_width()/2, button_surface.get_height()/2))
+        button_rect = pg.Rect(*pos, *size)
+        button_surface.blit(text_obj, text_rect)
+        self.screen.blit(button_surface, (button_rect.x, button_rect.y))
+
 
 
 if __name__ == '__main__':

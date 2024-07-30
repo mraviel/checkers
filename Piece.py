@@ -4,7 +4,7 @@ from Player import Player
 
 class Piece:
 
-    def __init__(self, color, pos: tuple, player: Player, is_king=False, picked=False):
+    def __init__(self, color: tuple, pos: tuple, player: Player, is_king=False, picked=False):
 
         self.color = color
         self.pos = pos
@@ -12,10 +12,10 @@ class Piece:
         self.is_king = is_king
         self.picked = picked
 
-    def piece_moves(self, board):
+    def piece_moves(self, board) -> list:
         current_x, current_y = self.pos 
         
-        print(f"{current_x}, {current_y}")
+        # print(f"{current_x}, {current_y}")
         moves = []
 
         move_mapper = {1: [(-1, -1), (1, -1)], 2: [(1, 1), (-1, 1)], 'king': [(-1, -1), (-1, 1), (1, -1), (1, 1)]}  # player1 and player2 or king move mapper.
@@ -23,7 +23,7 @@ class Piece:
 
         for dr, dc in directions:
             x, y = current_x + dr, current_y + dc
-            print(f"dr: {dr}, dc: {dc}, x: {x}, y: {y}")
+            # print(f"dr: {dr}, dc: {dc}, x: {x}, y: {y}")
 
             while 0 <= x <= 7 and 0 <= y <= 7:
                     if board[x][y].piece_on is None:
@@ -39,10 +39,10 @@ class Piece:
 
         return moves
     
-    def piece_eat(self, board, opposite_player):
+    def piece_eat(self, board, opposite_player: Player) -> list:
         current_x, current_y = self.pos 
         
-        print(f"{current_x}, {current_y}")
+        # print(f"{current_x}, {current_y}")
         moves = []
 
         move_mapper = {1: [(-1, -1), (1, -1)], 2: [(1, 1), (-1, 1)], 'king': [(-1, -1), (-1, 1), (1, -1), (1, 1)]}  # player1 and player2 or king move mapper.
@@ -50,7 +50,7 @@ class Piece:
 
         for dr, dc in directions:
             x, y = current_x + dr, current_y + dc
-            print(f"dr: {dr}, dc: {dc}, x: {x}, y: {y}")
+            # print(f"dr: {dr}, dc: {dc}, x: {x}, y: {y}")
 
             while 0 <= x <= 7 and 0 <= y <= 7:
                     if board[x][y].piece_on is not None and board[x][y].piece_on.player == opposite_player:

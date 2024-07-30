@@ -1,12 +1,13 @@
 import socket
 import threading
 import pickle
+from Settings import PORT
+import time
 
 class Server:
     
     HREADER = 64
     SERVER = socket.gethostbyname(socket.gethostname())
-    PORT = 5001
     ADDR = (SERVER, PORT)
     FORMAT = 'utf-8'
     DISCONNECT_MESSAAGE = "!DISCONNECT"
@@ -15,38 +16,38 @@ class Server:
     def __init__(self):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind(Server.ADDR)
-    
-    def handle_client(self, conn, addr):
-        print(f"[NEW CONNECTION] {addr} connected")
-        connected = True
-        while connected:
-            msg_length = conn.recv(Server.HREADER).decode(Server.FORMAT) # block line (wait for message.)
-            if msg_length:
-                msg_length = int(msg_length)
-                msg = conn.recv(msg_length).decode(Server.FORMAT)
-                if msg == Server.DISCONNECT_MESSAAGE:
-                    connected = False
 
-                print(f"[{addr}] {msg}") 
-                conn.sendall("Msg received".encode(Server.FORMAT))   
-        
-        conn.close() 
+        self.clients = set()
+        self.clients_lock = threading.Lock()
+
+    def send_board(self, conn, board):
+        pickle_board = pickle.dumps(board)
+        board_length = len(pickle_board)
+        send_length = str(board_length).encode(Server.FORMAT)
+        send_length += b' ' * (Server.HREADER - len(send_length)) 
+        conn.sendall(send_length)
+        conn.sendall(pickle_board)
+    
+    def get_board(self, conn):
+        board = None
+        board_length = conn.recv(Server.HREADER).decode(Server.FORMAT) # block line (wait for message.)
+        if board_length:
+            board_length = int(board_length)
+            board_pickle = conn.recv(board_length)
+            board = pickle.loads(board_pickle)
+        return board
 
     def handle_client_board(self, conn, addr):
         print(f"[NEW CONNECTION] {addr} connected")
         connected = True
         while connected:
-            board_length = conn.recv(Server.HREADER).decode(Server.FORMAT) # block line (wait for message.)
-            if board_length:
-                board_length = int(board_length)
-                board_pickle = conn.recv(board_length)
-                board = pickle.loads(board_pickle)
-                if board == Server.DISCONNECT_MESSAAGE:
-                    connected = False
+            board = self.get_board(conn)
+            if board == Server.DISCONNECT_MESSAAGE:
+                connected = False
 
-                print(f"[{addr}] {board}") 
-                conn.sendall(board_pickle)
-                # conn.sendall("Msg received".encode(Server.FORMAT))   
+            print(f"[{addr}] {board}") 
+            for client in self.clients:
+                self.send_board(conn=client, board=board)
         
         conn.close() 
 
@@ -58,6 +59,7 @@ class Server:
 
         while True:
             conn, addr = self.server.accept()
+            self.clients.add(conn)
             thread = threading.Thread(target=self.handle_client_board, args=(conn, addr))
             thread.start()  # start thread on each client.
             print(f"\n[ACTIVE CONNECTIONS] {threading.active_count() - 1}")

@@ -14,16 +14,8 @@ class Client:
         self.addr = (self.server, self.port)
 
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client.settimeout(0.5)
         self.client.connect(self.addr)
-
-    def send(self, msg):
-        message = msg.encode(Client.FORMAT)
-        msg_length = len(message)
-        send_length = str(msg_length).encode(Client.FORMAT)
-        send_length += b' ' * (Client.HREADER - len(send_length)) 
-        self.client.send(send_length)
-        self.client.send(message)
-        print(self.client.recv(2048))
 
     def send_board(self, board):
 
@@ -34,8 +26,20 @@ class Client:
         self.client.send(send_length)
         self.client.send(pickle_board)
 
-        new_pikle_board = self.client.recv(1000000)
-        print(pickle.loads(new_pikle_board))
+        new_board = self.get_board()
+        print(f"new_board: {new_board}")
+
+    def get_board(self):
+
+        board = None
+        board_length = self.client.recv(Client.HREADER).decode(Client.FORMAT)
+        if board_length:
+            board_length = int(board_length)
+            board_pickle = self.client.recv(board_length)
+            board = pickle.loads(board_pickle)
+            # if board == Client.DISCONNECT_MESSAAGE:
+            #     connected = False
+        return board
 
 if __name__ == '__main__':
     

@@ -11,7 +11,6 @@ class Board:
     def __init__(self):
 
         self.board = self.new_board()
-        print(self.board)
 
     @staticmethod
     def new_board():
@@ -65,7 +64,7 @@ class Board:
                     elif y > 4:
                         self.board[x][y].piece_on = Piece(color=RED, pos=self.board[x][y].board_pos, player=player1)
 
-    def drawBoardGame(self, screen):
+    def drawBoardGame(self, screen) -> None:
 
         """ Draw the all board on the screen """
 
@@ -73,7 +72,7 @@ class Board:
             for x in range(8):
                 pg.draw.rect(screen, self.board[x][y].color, (WIDTH / 8 * x, HEIGHT / 8 * y, WIDTH / 8, HEIGHT / 8), 0)
 
-    def posOnBoard(self, pos):
+    def posOnBoard(self, pos: tuple) -> list:
 
         """ Take a position (type list / tuple / dict) and put it in the board.
             Return: Squre in (x, y) location."""
@@ -81,23 +80,20 @@ class Board:
         x, y = pos
         return self.board[x][y]
 
-    def inRangeOfBoard(self, pos):
+    def inRangeOfBoard(self, pos: tuple) -> bool:
 
         """ Take a position and Return True if that pos is in the range of the board. """
 
         x, y = pos
         try:
             if (x < 0) or (y < 0):
-                print("BADD")
                 return False
             elif self.board[x][y]:
-                print("GOOD")
                 return True
         except IndexError:
-            print("BADD")
             return False
 
-    def listOfMoves(self, piece: Piece, main_player: Player, opposite_player: Player, multi: bool):
+    def listOfMoves(self, piece, main_player: Player, opposite_player: Player, multi: bool):
         """ Get piece list of moves and remove moves that are not valid (ex: move on another piece) +
             Add moves that are valid (ex: eat)
             Get also multi : if there is a multiple eat if true remove all move and keep just the eat options."""
@@ -117,7 +113,7 @@ class Board:
 
         return list_of_moves
 
-    def colorPossibleMoves(self, list_of_moves):
+    def colorPossibleMoves(self, list_of_moves: dict) -> None:
         """ Get list of moves and color them """
 
         for move in list_of_moves['move']:
@@ -132,7 +128,7 @@ class Board:
                 y = eat_move[1]
                 self.board[x][y].changeColor(YELLOW)
 
-    def squareOrigColor(self):
+    def squareOrigColor(self) -> None:
         """ Change the colors of all squares back to the origin color """
 
         for y in range(8):
@@ -146,7 +142,7 @@ class Board:
                 elif (x % 2 == 0) and (y % 2 == 0):
                     self.board[x][y].color = BLACK
 
-    def movePiece(self, from_square, to_square):
+    def movePiece(self, from_square: Square, to_square: Square) -> dict:
 
         """ Move piece from one position to another """
         print(f"from_square: {from_square}")
@@ -163,7 +159,7 @@ class Board:
 
         return {'from': from_square, 'to': to_square}
 
-    def eatPiece(self, from_square, to_square, middle_square):
+    def eatPiece(self, from_square: Square, to_square: Square, middle_square: Square) -> dict:
 
         """ Make the eat move: move the piece and remove the next position. """
 
@@ -171,32 +167,4 @@ class Board:
         x, y = middle_square.board_pos
         self.board[x][y].piece_on = None
         return {'from_squre': from_square, 'to_square': to_square, 'eat_square': middle_square}
-
-    def movePieceTurn(self, oldPos, newPos, canMoves):
-
-        """ The turn of the game each player move in his turn."""
-
-        x1, y1 = oldPos
-        x2, y2 = newPos
-
-        print(canMoves)
-
-        # move piece
-        for move in canMoves:
-
-            if ('move' in move) and ((x2, y2) == canMoves[move]):
-                # make a move
-                self.movePiece(oldPos, newPos)
-                return "MOVE JUST HAPPEND"
-
-            elif ('eat' in move) and ('R' in move) and ((x2, y2) == canMoves[move][0]) and (x1 - x2 < 0):  # eat to right
-                # remove next piece and move the piece
-                self.eatPiece(oldPos, newPos, canMoves[move][1])
-                return "EAT JUST HAPPEND (RIGHT)"
-
-            elif ('eat' in move) and ('L' in move) and ((x2, y2) == canMoves[move][0]) and (x1 - x2 > 0):  # eat to left
-                # remove next piece and move the piece
-                self.eatPiece(oldPos, newPos, canMoves[move][1])
-                return "EAT JUST HAPPEND (LEFT)"
-
-        return "NOTHING HAPPEND"
+    
